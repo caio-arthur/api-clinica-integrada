@@ -52,9 +52,9 @@ namespace Application.Handlers.Pacientes.Commands.Update
 
                 await _context.SaveChangesAsync(cancellationToken);
 
-                var result = _mapper.Map<ServiceResult<PacienteDTO>>(entidadeAlterado);
+                var result = _mapper.Map<PacienteDTO>(entidadeAlterado);
 
-                return result;
+                return ServiceResult.Success(result);
             } catch (Exception ex) {
                 throw;
             }

@@ -40,7 +40,8 @@ namespace Application.Handlers.ListaEsperaEntries.Commands.Update
 
             await _context.SaveChangesAsync(cancellationToken);
 
-            return _mapper.Map<ServiceResult<ListaEsperaEntryDTO>>(entity);
+            var result = _mapper.Map<ListaEsperaEntryDTO>(entity);
+            return ServiceResult.Success(result);
         }
     }
 
