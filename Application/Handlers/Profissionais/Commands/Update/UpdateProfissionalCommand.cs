@@ -48,12 +48,11 @@ namespace Application.Handlers.Profissionais.Commands.Update
 
                 //var historico = entidadeOriginal.GerarHistoricoDiferenca(entidadeAlterado, entidadeAlterado.Id, _currentUserService.UserId);
                 //await _context.Historicos.AddAsync(historico, cancellationToken);
-
+                
                 await _context.SaveChangesAsync(cancellationToken);
 
-                var result = _mapper.Map<ServiceResult<ProfissionalDTO>>(entidadeAlterado);
-
-                return result;
+                var result = _mapper.Map<ProfissionalDTO>(entidadeAlterado);
+                return ServiceResult.Success(result);
             } catch (Exception ex) {
                 throw;
             }
