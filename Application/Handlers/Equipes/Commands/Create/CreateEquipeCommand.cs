@@ -4,11 +4,6 @@ using AutoMapper;
 using Domain.Entities;
 using Domain.Enums;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Handlers.Equipes.Commands.Create
 {
@@ -46,18 +41,28 @@ namespace Application.Handlers.Equipes.Commands.Create
                 Profissionais = new List<EquipeProfissional>()
             };
 
-            foreach (var estagiarioId in request.Estagiarios) {
-                equipe.Profissionais.Add(new EquipeProfissional {
-                    EquipeId = equipe.Id,
-                    ProfissionalId = estagiarioId
-                });
+            if (request.Estagiarios != null && request.Estagiarios.Any())
+            {
+                foreach (var estagiarioId in request.Estagiarios)
+                {
+                    equipe.Profissionais.Add(new EquipeProfissional
+                    {
+                        EquipeId = equipe.Id,
+                        ProfissionalId = estagiarioId
+                    });
+                }
             }
 
-            foreach (var professorId in request.Professores) {
-                equipe.Profissionais.Add(new EquipeProfissional {
-                    EquipeId = equipe.Id,
-                    ProfissionalId = professorId
-                });
+            if (request.Professores != null && request.Professores.Any())
+            {
+                foreach (var professorId in request.Professores)
+                {
+                    equipe.Profissionais.Add(new EquipeProfissional
+                    {
+                        EquipeId = equipe.Id,
+                        ProfissionalId = professorId
+                    });
+                }
             }
 
             _context.Equipes.Add(equipe);

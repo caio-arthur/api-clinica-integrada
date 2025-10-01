@@ -9,7 +9,7 @@ namespace Domain.Enums
     public enum PacienteEtapa
     {
         Cadastrado = 1,
-        ListaEspera = 2,
+        ListaEspera = 2, // Etapa 1
         TriagemConsulta = 3,
         ConsultaConcluida = 4,
         ConsultaCancelada = 5
