@@ -6,6 +6,6 @@ namespace Application.Handlers.Salas.Commands
     {
         public string Nome { get; set; }
         public Especialidade Especialidade { get; set; }
-        public bool IsDisponivel { get; set; }
+        //public bool IsDisponivel { get; set; }
     }
 }

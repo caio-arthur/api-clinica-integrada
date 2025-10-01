@@ -39,7 +39,6 @@ namespace Application.Handlers.Salas.Commands.Update
                 }
 
                 entidadeAlterado.Nome = request.Nome;
-                entidadeAlterado.IsDisponivel = request.IsDisponivel;
                 entidadeAlterado.Especialidade = request.Especialidade;
 
                 //var historico = entidadeOriginal.GerarHistoricoDiferenca(entidadeAlterado, entidadeAlterado.Id, _currentUserService.UserId);
