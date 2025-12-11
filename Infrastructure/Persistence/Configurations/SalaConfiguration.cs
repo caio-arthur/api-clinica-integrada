@@ -10,6 +10,7 @@ namespace Infrastructure.Persistence.Configurations
             builder.HasKey(p => p.Id);
             builder.Property(p => p.Nome).IsRequired();
             builder.Property(p => p.Especialidade).IsRequired();
+            builder.Property(p => p.Capacidade).HasDefaultValue(1);
 
             builder.HasMany(p => p.Reservas)
                 .WithOne(p => p.Sala)

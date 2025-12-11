@@ -4,7 +4,7 @@ services:
   webapi:
     image: webapi:dev
     build:
-      context: ./WebApi
+      context: .
       dockerfile: Dockerfile
     ports:
       - "8080:8080"

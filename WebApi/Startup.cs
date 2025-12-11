@@ -35,7 +35,7 @@ namespace WebApi
             services.AddSwaggerGen(c => {
                 var desc = $"API Clinica Integrada <br />{new FileInfo(Assembly.GetExecutingAssembly().Location).LastWriteTime}";
                 c.SwaggerDoc("v1", new OpenApiInfo {
-                    Version = Assembly.GetEntryAssembly().GetName().Version.ToString(),
+                    Version = "v1",
                     Title = "WebApi",
                     Description = desc
                 });
@@ -90,13 +90,8 @@ namespace WebApi
 
             GridifyGlobalConfiguration.EnableEntityFrameworkCompatibilityLayer();
 
-            if (env.IsDevelopment()) {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
-
             app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebApi v1"));
+            app.UseSwaggerUI();
 
             app.UseCors(x => x
               .AllowAnyMethod()
