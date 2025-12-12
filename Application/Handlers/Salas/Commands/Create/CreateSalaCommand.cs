@@ -30,6 +30,7 @@ namespace Application.Handlers.Salas.Commands.Create
                 var entity = new Sala {
                     Nome = request.Nome,
                     Especialidade = request.Especialidade,
+                    Capacidade = request.Capacidade,
                     IsDisponivel = true
                 };
 
