@@ -11,9 +11,12 @@ namespace Domain.Entities
         public AgendamentoTipo Tipo { get; set; }
         public AgendamentoStatus Status { get; set; }
 
+        public string? NomeAluno { get; set; }
+        public string? NomeEquipe { get; set; }
+
         //Relacionamentos
-        public Guid PacienteId { get; set; }
-        public Paciente Paciente { get; set; }
+        public Guid? PacienteId { get; set; }
+        public Paciente? Paciente { get; set; }
 
         public Guid? SalaId { get; set; }
         public Sala Sala { get; set; }

@@ -7,7 +7,7 @@ using Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Application.Handlers.Consultas.Commands.Update.UpdateDisponibilidadeSala
+namespace Application.Handlers.Consultas.Commands.Update.IniciarConsulta
 {
     public class UpdateIniciarConsultaCommand : IRequest<ServiceResult>
     {

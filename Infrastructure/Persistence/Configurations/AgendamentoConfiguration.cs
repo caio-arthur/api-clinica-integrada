@@ -12,9 +12,13 @@ namespace Infrastructure.Persistence.Configurations
             builder.Property(p => p.Status).IsRequired();
             builder.Property(p => p.Tipo).IsRequired();
 
+            builder.Property(p => p.NomeAluno).HasMaxLength(200);
+            builder.Property(p => p.NomeEquipe).HasMaxLength(200);
+
             builder.HasOne(p => p.Paciente)
                 .WithMany(p => p.Agendamentos)
-                .HasForeignKey(p => p.PacienteId);
+                .HasForeignKey(p => p.PacienteId)
+                .IsRequired(false);
 
             builder.HasOne(a => a.Consulta)
                 .WithOne(b => b.Agendamento)
