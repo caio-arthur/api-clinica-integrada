@@ -12,7 +12,7 @@ namespace Infrastructure.Persistence.Configurations
             builder.Property(p => p.Status).IsRequired();
             builder.Property(p => p.Tipo).IsRequired();
 
-            builder.Property(p => p.NomeAluno).HasMaxLength(200);
+            builder.Property(p => p.NomePaciente).HasMaxLength(200);
             builder.Property(p => p.NomeEquipe).HasMaxLength(200);
 
             builder.HasOne(p => p.Paciente)
@@ -22,7 +22,9 @@ namespace Infrastructure.Persistence.Configurations
 
             builder.HasOne(a => a.Consulta)
                 .WithOne(b => b.Agendamento)
-                .HasForeignKey<Agendamento>(a => a.ConsultaId);
+                .HasForeignKey<Agendamento>(a => a.ConsultaId)
+                .OnDelete(DeleteBehavior.Cascade);
+                ;
 
 
         }

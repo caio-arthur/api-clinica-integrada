@@ -16,7 +16,7 @@ namespace Application.DTOs
         public string Especialidade { get; set; }
         public string StatusConsulta { get; set; }
         public Guid? PacienteId { get; set; }
-        public string? NomeAluno { get; set; }
+        public string? NomePaciente { get; set; }
         public string? NomeEquipe { get; set; }
         public string Sala { get; set; }
         public Guid? SalaId { get; set; }
@@ -32,8 +32,8 @@ namespace Application.DTOs
                 .ForMember(d => d.StatusConsulta, opt => opt.MapFrom(s => s.Consulta != null ? s.Consulta.Status : 0))
                 .ForMember(d => d.Especialidade, opt => opt.MapFrom(s => s.Consulta != null ? s.Consulta.Especialidade : 0))
                 .ForMember(d => d.PacienteId, opt => opt.MapFrom(s => s.PacienteId))
-                .ForMember(d => d.Nome, opt => opt.MapFrom(s => s.Paciente != null ? s.Paciente.Nome : (s.NomeAluno ?? s.NomeEquipe)))
-                .ForMember(d => d.NomeAluno, opt => opt.MapFrom(s => s.NomeAluno))
+                .ForMember(d => d.Nome, opt => opt.MapFrom(s => s.Paciente != null ? s.Paciente.Nome : (s.NomePaciente ?? s.NomeEquipe)))
+                .ForMember(d => d.NomePaciente, opt => opt.MapFrom(s => s.NomePaciente))
                 .ForMember(d => d.NomeEquipe, opt => opt.MapFrom(s => s.NomeEquipe))
                 .ForMember(d => d.Sala, opt => opt.MapFrom(s => s.Sala != null ? s.Sala.Nome : string.Empty))
                 .ForMember(d => d.SalaId, opt => opt.MapFrom(s => s.SalaId))

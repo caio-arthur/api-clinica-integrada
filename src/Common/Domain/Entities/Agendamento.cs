@@ -11,7 +11,7 @@ namespace Domain.Entities
         public AgendamentoTipo Tipo { get; set; }
         public AgendamentoStatus Status { get; set; }
 
-        public string? NomeAluno { get; set; }
+        public string? NomePaciente { get; set; }
         public string? NomeEquipe { get; set; }
 
         //Relacionamentos

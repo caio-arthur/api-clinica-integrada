@@ -43,7 +43,7 @@ namespace Application.Handlers.Agendamentos.Commands.Update
                 entidadeAlterado.Tipo = request.Tipo;
                 entidadeAlterado.Status = request.Status;
                 entidadeAlterado.PacienteId = request.PacienteId;
-                entidadeAlterado.NomeAluno = request.NomeAluno;
+                entidadeAlterado.NomePaciente = request.NomePaciente;
                 entidadeAlterado.NomeEquipe = request.NomeEquipe;
                 entidadeAlterado.SalaId = request.SalaId;
                 entidadeAlterado.ConsultaId = request.ConsultaId;
