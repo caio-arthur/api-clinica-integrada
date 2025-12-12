@@ -12,8 +12,7 @@ namespace Application.Handlers.Profissionais
 
             RuleFor(v => v.Nome)
                 .NotEmpty().WithMessage("Nome é obrigatório.");
-            //RuleFor(v => v.RA)
-            //    .NotEmpty().WithMessage("RA é obrigatório.");
+
             RuleFor(v => v.Tipo)
                 .NotEmpty().WithMessage("Tipo é obrigatório.");
             RuleFor(v => v.Especialidade)
