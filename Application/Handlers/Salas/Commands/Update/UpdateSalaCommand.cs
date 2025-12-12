@@ -40,6 +40,7 @@ namespace Application.Handlers.Salas.Commands.Update
 
                 entidadeAlterado.Nome = request.Nome;
                 entidadeAlterado.Especialidade = request.Especialidade;
+                entidadeAlterado.Capacidade = request.Capacidade;
 
                 //var historico = entidadeOriginal.GerarHistoricoDiferenca(entidadeAlterado, entidadeAlterado.Id, _currentUserService.UserId);
                 //await _context.Historicos.AddAsync(historico, cancellationToken);
