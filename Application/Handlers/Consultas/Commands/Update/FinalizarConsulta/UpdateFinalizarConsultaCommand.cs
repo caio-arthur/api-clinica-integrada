@@ -1,5 +1,4 @@
-﻿using Application.DTOs;
-using Application.Interfaces;
+﻿using Application.Interfaces;
 using Application.Models;
 using AutoMapper;
 using Domain.Entities;
@@ -21,42 +20,55 @@ namespace Application.Handlers.Consultas.Commands.Update.FinalizarConsulta
         private readonly IMapper _mapper;
         public UpdateFinalizarConsultaCommandHandler(IApplicationDbContext context,
             IMapper mapper,
-            ISender sender) {
+            ISender sender)
+        {
             _context = context;
             _mapper = mapper;
             _mediator = sender;
         }
-        public async Task<ServiceResult> Handle(UpdateFinalizarConsultaCommand request, CancellationToken cancellationToken) {
-            try {
+        public async Task<ServiceResult> Handle(UpdateFinalizarConsultaCommand request, CancellationToken cancellationToken)
+        {
+            try
+            {
                 var consulta = await _context.Consultas
                     .Include(c => c.Agendamento) // Inclui o Agendamento relacionado
                     .FirstOrDefaultAsync(c => c.Id == request.ConsultaId);
 
-                if (consulta == null) {
+                if (consulta == null)
+                {
                     throw new Exception(nameof(Consulta));
                 }
 
                 consulta.Status = ConsultaStatus.Concluida;
                 consulta.DataHoraFim = DateTime.Now; // O Horário é registrado
 
-                await AtualizarEtapaPaciente(consulta.Agendamento.PacienteId, cancellationToken);
+                if (consulta.Agendamento != null)
+                {
+                    await AtualizarEtapaPaciente((Guid)consulta.Agendamento.PacienteId, cancellationToken);
+
+                }
 
                 //Liberar Sala
                 var salaConsulta = await _context.Salas.FirstOrDefaultAsync(x => x.Id == consulta.Agendamento.SalaId);
-                if (salaConsulta != null) {
+                if (salaConsulta != null)
+                {
                     salaConsulta.IsDisponivel = true;
                 }
                 await _context.SaveChangesAsync(cancellationToken);
                 var result = salaConsulta != null ? "Sala Liberada" : "Ok";
                 return ServiceResult.Success(result);
-            } catch (Exception ex) {
+            }
+            catch (Exception ex)
+            {
                 throw;
             }
         }
 
-        private async Task AtualizarEtapaPaciente(Guid pacienteId, CancellationToken cancellationToken) {
+        private async Task AtualizarEtapaPaciente(Guid pacienteId, CancellationToken cancellationToken)
+        {
             var paciente = await _context.Pacientes.FirstOrDefaultAsync(x => x.Id == pacienteId, cancellationToken);
-            if (paciente == null) {
+            if (paciente == null)
+            {
                 throw new Exception("Paciente não encontrado.");
             }
             paciente.Etapa = PacienteEtapa.ConsultaConcluida;

@@ -43,6 +43,8 @@ namespace Application.Handlers.Agendamentos.Commands.Create
                     Tipo = request.Agendamento.Tipo,
                     Status = request.Agendamento.Status,
                     PacienteId = request.Agendamento.PacienteId,
+                    NomeAluno = request.Agendamento.NomeAluno,
+                    NomeEquipe = request.Agendamento.NomeEquipe,
                     SalaId = request.Agendamento.SalaId,
                 };
 
@@ -57,9 +59,11 @@ namespace Application.Handlers.Agendamentos.Commands.Create
                 agendamentoEntity.ConsultaId = consultaEntity.Id;
 
                 //Atualizar Status Lista de Espera para Atendido
-                await AtualizarStatusListaEspera(request.Agendamento.PacienteId, cancellationToken);
-                //Atualizar Etapa Paciente para TriagemConsultaAgendada
-                await AtualizarEtapaPaciente(request.Agendamento.PacienteId, cancellationToken);
+                if (request.Agendamento.PacienteId.HasValue) {
+                    await AtualizarStatusListaEspera(request.Agendamento.PacienteId.Value, cancellationToken);
+                    //Atualizar Etapa Paciente para TriagemConsultaAgendada
+                    await AtualizarEtapaPaciente(request.Agendamento.PacienteId.Value, cancellationToken);
+                }
 
                 await _context.Agendamentos.AddAsync(agendamentoEntity, cancellationToken);
                 await _context.Consultas.AddAsync(consultaEntity, cancellationToken);
@@ -99,7 +103,7 @@ namespace Application.Handlers.Agendamentos.Commands.Create
         public async Task<ServiceResult> ValidarEntidadesAsync(
             Guid? salaId,
             Guid? equipeId,
-            Guid pacienteId,
+            Guid? pacienteId,
             CancellationToken cancellationToken) {
                 if (salaId.HasValue) {
                     var sala = await _context.Salas.FirstOrDefaultAsync(s => s.Id == salaId, cancellationToken);
@@ -115,9 +119,11 @@ namespace Application.Handlers.Agendamentos.Commands.Create
                     }
                 }
 
-                var paciente = await _context.Pacientes.FirstOrDefaultAsync(p => p.Id == pacienteId, cancellationToken);
-                if (paciente == null) {
-                    return ServiceResult.Failed(ServiceError.CustomMessage("Paciente não existe"));
+                if (pacienteId.HasValue) {
+                    var paciente = await _context.Pacientes.FirstOrDefaultAsync(p => p.Id == pacienteId, cancellationToken);
+                    if (paciente == null) {
+                        return ServiceResult.Failed(ServiceError.CustomMessage("Paciente não existe"));
+                    }
                 }
 
             return ServiceResult.Success("Ok");

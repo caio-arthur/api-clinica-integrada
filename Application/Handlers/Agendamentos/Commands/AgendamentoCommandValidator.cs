@@ -18,8 +18,10 @@ namespace Application.Handlers.Agendamentos.Commands
                 .NotEmpty().WithMessage("Tipo é obrigatório.");
             RuleFor(v => v.Status)
                 .NotEmpty().WithMessage("Status é obrigatório.");
-            RuleFor(v => v.PacienteId)
-                .NotEmpty().WithMessage("PacienteId é obrigatório.");
+
+            RuleFor(v => v)
+                .Must(v => v.PacienteId.HasValue || !string.IsNullOrEmpty(v.NomeAluno) || !string.IsNullOrEmpty(v.NomeEquipe))
+                .WithMessage("É necessário informar o Paciente OU (Nome do Aluno / Nome da Equipe).");
         }
     }
 }

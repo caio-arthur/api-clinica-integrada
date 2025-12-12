@@ -27,7 +27,7 @@ namespace Application.Handlers.Agendamentos.Queries.GetAgendamentos
 
 
             var mapper = new GridifyMapper<Agendamento>()
-                .AddMap("PacienteNome", agendamento => agendamento.Paciente.Nome)
+                .AddMap("PacienteNome", agendamento => agendamento.Paciente != null ? agendamento.Paciente.Nome : (agendamento.NomeAluno ?? agendamento.NomeEquipe))
                 .AddMap("Especialidade", agendamento => agendamento.Consulta.Especialidade)
                 .GenerateMappings()
                 ;

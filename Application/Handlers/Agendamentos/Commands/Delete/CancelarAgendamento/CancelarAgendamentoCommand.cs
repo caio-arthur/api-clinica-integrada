@@ -14,21 +14,28 @@ namespace Application.Handlers.Agendamentos.Commands.Delete.CancelarAgendamento
     {
         private readonly IApplicationDbContext _context;
 
-        public CancelarAgendamentoCommandHandler(IApplicationDbContext context) {
+        public CancelarAgendamentoCommandHandler(IApplicationDbContext context)
+        {
             _context = context;
         }
 
-        public async Task<ServiceResult<string>> Handle(CancelarAgendamentoCommand request, CancellationToken cancellationToken) {
-            try {
+        public async Task<ServiceResult<string>> Handle(CancelarAgendamentoCommand request, CancellationToken cancellationToken)
+        {
+            try
+            {
                 var entity = await _context.Agendamentos
                     .Where(p => !p.IsDeleted)
                     .FirstOrDefaultAsync(p => p.Id == request.Id);
 
-                if (entity == null) {
+                if (entity == null)
+                {
                     throw new Exception("Agendamento não encontrado");
                 }
 
-                await AtualizarEtapaPaciente(entity.PacienteId, cancellationToken);
+                if (entity.PacienteId != null)
+                {
+                    await AtualizarEtapaPaciente((Guid)entity.PacienteId, cancellationToken);
+                }
 
                 var consulta = await _context.Consultas.FirstOrDefaultAsync(x => x.AgendamentoId == entity.Id);
                 consulta.Status = ConsultaStatus.Cancelada;
@@ -38,15 +45,19 @@ namespace Application.Handlers.Agendamentos.Commands.Delete.CancelarAgendamento
 
                 return ServiceResult.Success("Ok");
 
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 throw;
 
             }
         }
 
-        public async Task AtualizarEtapaPaciente(Guid pacienteId, CancellationToken cancellationToken) {
+        public async Task AtualizarEtapaPaciente(Guid pacienteId, CancellationToken cancellationToken)
+        {
             var paciente = await _context.Pacientes.FirstOrDefaultAsync(x => x.Id == pacienteId, cancellationToken);
-            if (paciente == null) {
+            if (paciente == null)
+            {
                 throw new Exception("Paciente não encontrado.");
             }
             paciente.Etapa = PacienteEtapa.ConsultaCancelada;
