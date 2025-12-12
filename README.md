@@ -6,5 +6,5 @@
 
 For example, to add a new migration from the root folder:
  
-dotnet ef migrations add "Sample_Migration" --project Infrastructure --startup-project WebApi --output-dir Migrations
+dotnet ef migrations add "SampleMigration" --project src\Common\Infrastructure --startup-project src\Apps\WebApi --output-dir Migrations
 

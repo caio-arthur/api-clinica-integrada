@@ -30,7 +30,7 @@ namespace Application.Handlers.Agendamentos.Queries.GetAgendamentosDoDiaByEspeci
         public async Task<ServiceResult<PaginatedList<AgendamentosHojeDTO>>> Handle(GetAgendamentosHojeByEspecialidadeQuery request, CancellationToken cancellationToken) {
             var mapper = new GridifyMapper<Agendamento>()
                 .GenerateMappings()
-                .AddMap("PacienteNome", agendamento => agendamento.Paciente != null ? agendamento.Paciente.Nome : (agendamento.NomeAluno ?? agendamento.NomeEquipe));
+                .AddMap("PacienteNome", agendamento => agendamento.Paciente != null ? agendamento.Paciente.Nome : (agendamento.NomePaciente ?? agendamento.NomeEquipe));
 
             var today = DateTime.Today;
             var tomorrow = today.AddDays(1);

@@ -43,7 +43,7 @@ namespace Application.Handlers.Agendamentos.Commands.Create
                     Tipo = request.Agendamento.Tipo,
                     Status = request.Agendamento.Status,
                     PacienteId = request.Agendamento.PacienteId,
-                    NomeAluno = request.Agendamento.NomeAluno,
+                    NomePaciente = request.Agendamento.NomePaciente,
                     NomeEquipe = request.Agendamento.NomeEquipe,
                     SalaId = request.Agendamento.SalaId,
                 };

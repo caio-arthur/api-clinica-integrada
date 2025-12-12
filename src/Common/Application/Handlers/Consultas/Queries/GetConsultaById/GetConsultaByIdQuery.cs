@@ -3,6 +3,7 @@ using Application.Handlers.Equipes.Queries.GetEquipeById;
 using Application.Interfaces;
 using Application.Models;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,23 +27,17 @@ namespace Application.Handlers.Consultas.Queries.GetConsultaById
         }
 
         public async Task<ServiceResult<ConsultaDTO>> Handle(GetConsultaByIdQuery request, CancellationToken cancellationToken) {
-            try {
-                var entity = await _context.Consultas
-                    .Where(p => !p.IsDeleted)
-                    .Include(p => p.Agendamento)
-                        .ThenInclude(p => p.Paciente)
-                    .FirstOrDefaultAsync(p => p.Id == request.Id);
+            var result = await _context.Consultas
+                .Where(p => !p.IsDeleted && p.Id == request.Id)
+                .AsNoTracking()
+                .ProjectTo<ConsultaDTO>(_mapper.ConfigurationProvider)
+                .FirstOrDefaultAsync(cancellationToken);
 
-                if (entity == null) {
-                    throw new Exception("Consulta não encontrada");
-                }
-
-                var result = _mapper.Map<ConsultaDTO>(entity);
-
-                return ServiceResult.Success(result);
-            } catch (Exception e) {
-                throw;
+            if (result == null) {
+                throw new Exception("Consulta não encontrada");
             }
+
+            return ServiceResult.Success(result);
         }
     }
 }

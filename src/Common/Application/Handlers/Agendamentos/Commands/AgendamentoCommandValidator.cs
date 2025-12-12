@@ -20,7 +20,7 @@ namespace Application.Handlers.Agendamentos.Commands
                 .NotEmpty().WithMessage("Status é obrigatório.");
 
             RuleFor(v => v)
-                .Must(v => v.PacienteId.HasValue || !string.IsNullOrEmpty(v.NomeAluno) || !string.IsNullOrEmpty(v.NomeEquipe))
+                .Must(v => v.PacienteId.HasValue || !string.IsNullOrEmpty(v.NomePaciente) || !string.IsNullOrEmpty(v.NomeEquipe))
                 .WithMessage("É necessário informar o Paciente OU (Nome do Aluno / Nome da Equipe).");
         }
     }
