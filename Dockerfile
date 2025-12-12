@@ -1,18 +1,17 @@
 # Estágio 1: Build
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-WORKDIR /src
+WORKDIR /app
 
-# Copia os arquivos de projeto primeiro e restaura as dependências
-# Isso aproveita o cache do Docker. A restauração só acontece de novo se um .csproj mudar.
-COPY ["WebApi/WebApi.csproj", "WebApi/"]
-COPY ["Application/Application.csproj", "Application/"]
-COPY ["Domain/Domain.csproj", "Domain/"]
-COPY ["Infrastructure/Infrastructure.csproj", "Infrastructure/"]
-RUN dotnet restore "WebApi/WebApi.csproj"
+# Copia os arquivos de projeto respeitando a estrutura de pastas e restaura as dependências
+COPY ["src/Apps/WebApi/WebApi.csproj", "src/Apps/WebApi/"]
+COPY ["src/Common/Application/Application.csproj", "src/Common/Application/"]
+COPY ["src/Common/Domain/Domain.csproj", "src/Common/Domain/"]
+COPY ["src/Common/Infrastructure/Infrastructure.csproj", "src/Common/Infrastructure/"]
+RUN dotnet restore "src/Apps/WebApi/WebApi.csproj"
 
 # Copia o resto do código fonte
 COPY . .
-WORKDIR "/src/WebApi"
+WORKDIR "/app/src/Apps/WebApi"
 RUN dotnet build "WebApi.csproj" -c Release -o /app/build
 
 # Estágio 2: Publicação
