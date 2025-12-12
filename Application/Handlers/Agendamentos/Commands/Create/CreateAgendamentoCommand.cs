@@ -78,16 +78,20 @@ namespace Application.Handlers.Agendamentos.Commands.Create
         }
 
         private async Task VerificarDisponibilidadeSala(Guid? SalaId, DateTime DataHoraInicio, DateTime DataHoraFim, CancellationToken cancellationToken) {
+            
+            var sala = await _context.Salas.FindAsync(new object[] { SalaId }, cancellationToken);
+            if (sala == null) return; // Should be caught by ValidarEntidadesAsync but safe to have
+
             // Validar se o novo agendamento tem interseção com algum existente na mesma sala
-            var agendamentos = await _context.Agendamentos
+            var agendamentosCount = await _context.Agendamentos
                 .Where(a => a.SalaId == SalaId &&
                             a.DataHoraInicio < DataHoraFim && // Começa antes do término do novo agendamento
                             a.DataHoraFim > DataHoraInicio && // Termina após o início do novo agendamento
                             !a.IsDeleted) // Apenas agendamentos não deletados
-                .ToListAsync(cancellationToken);
+                .CountAsync(cancellationToken);
 
-            if (agendamentos.Any()) {
-                throw new Exception("Sala não disponível para o horário informado.");
+            if (agendamentosCount >= sala.Capacidade) {
+                throw new Exception($"Sala atingiu a capacidade máxima de {sala.Capacidade} agendamentos para o horário informado.");
             }
         }
 
