@@ -8,6 +8,7 @@ namespace Application.Handlers.Agendamentos.Commands.Delete
     public class DeleteAgendamentoCommand : IRequestWrapper<string>
     {
         public Guid Id { get; set; }
+        public bool RetornarPacienteListaEspera { get; set; } = true;
     }
 
     public class DeleteAgendamentoCommandHandler : IRequestHandlerWrapper<DeleteAgendamentoCommand, string>
@@ -27,22 +28,34 @@ namespace Application.Handlers.Agendamentos.Commands.Delete
                 var entity = await _context.Agendamentos
                     .Where(p => !p.IsDeleted)
                     .Include(p => p.Consulta)
-                    .FirstOrDefaultAsync(p => p.Id == request.Id);
-
-                if (entity == null) {
-                    throw new Exception("Agendamento não encontrado");
-                }
+                    .Include(p => p.Paciente)
+                    .FirstOrDefaultAsync(p => p.Id == request.Id,cancellationToken) ?? throw new Exception("Agendamento não encontrado");
 
                 // caso a consulta possua status agendada, também deve ser marcada para exclusão
                 if (entity.Consulta != null && entity.Consulta.Status == ConsultaStatus.Agendada) {
                     entity.Consulta.ExcludedAt = _dateTime.Now;
                     entity.Consulta.IsDeleted = true;
-                    _context.Consultas.Update(entity.Consulta);
+                }
+
+                if (request.RetornarPacienteListaEspera && entity.Paciente != null) 
+                {
+                    var lista = await _context.ListaEspera
+                        .Where(p => !p.IsDeleted && p.PacienteId == entity.PacienteId)
+                        .OrderByDescending(p => p.Created)
+                        .FirstOrDefaultAsync(cancellationToken);
+
+                    lista.Status = ListaStatus.Aguardando;
+                    lista.DataEntrada = DateTime.Now;
+
+                    entity.Paciente.Etapa = PacienteEtapa.ListaEspera;
+                }
+                else
+                {
+                    entity.Paciente.Etapa = PacienteEtapa.ConsultaCancelada;
                 }
 
                 entity.ExcludedAt = _dateTime.Now;
                 entity.IsDeleted = true;
-                _context.Agendamentos.Update(entity);
 
                 await _context.SaveChangesAsync(cancellationToken);
 

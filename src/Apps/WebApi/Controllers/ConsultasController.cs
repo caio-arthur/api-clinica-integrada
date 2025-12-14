@@ -1,4 +1,5 @@
 using Application.DTOs;
+using Application.Handlers.Consultas.Commands.AtualizarObservacoes;
 using Application.Handlers.Consultas.Commands.Delete;
 using Application.Handlers.Consultas.Commands.Update.FinalizarConsulta;
 using Application.Handlers.Consultas.Commands.Update.FinalizarTriagem;
@@ -117,6 +118,21 @@ namespace WebApi.Controllers
         public async Task<ActionResult<ConsultaDTO>> Update(Guid id, [FromBody] UpdateConsultaCommand command) {
             command.Id = id;
             try {
+                var result = await Mediator.Send(command);
+                if (!result.Succeeded) {
+                    return BadRequest(result);
+                }
+                return Ok(result);
+            } catch (Exception ex) {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [Authorize(Roles ="atendente")]
+        [HttpPut("{id}/observacoes")]
+        public async Task<ActionResult<ServiceResult<ConsultaDTO>>> UpdateObservacoes(Guid id, [FromBody] OrquestradorConsultaCommand command) {
+            try {
+                command.ConsultaId = id;
                 var result = await Mediator.Send(command);
                 if (!result.Succeeded) {
                     return BadRequest(result);

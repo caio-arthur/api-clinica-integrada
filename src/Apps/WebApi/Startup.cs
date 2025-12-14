@@ -11,35 +11,42 @@ using System.Text;
 using System.Text.Json.Serialization;
 using WebApi.ViewModels;
 using WebApi.ViewModels.ViewModelsValidator;
+using WebApi.Workers;
 
 namespace WebApi
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration) {
+        public Startup(IConfiguration configuration)
+        {
             Configuration = configuration;
         }
 
         public IConfiguration Configuration { get; }
 
-        public void ConfigureServices(IServiceCollection services) {
+        public void ConfigureServices(IServiceCollection services)
+        {
             services.AddControllers().AddJsonOptions(x =>
                 x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
             services.AddInfrastructure(Configuration);
             services.AddApplication();
+            services.AddHostedService<ConsultaMonitoramentoWorker>();
             services.AddScoped<IValidator<AutenticacaoViewModel>, AutenticacaoViewModelValidator>();
             services.AddHttpClient();
 
 
-            services.AddSwaggerGen(c => {
+            services.AddSwaggerGen(c =>
+            {
                 var desc = $"API Clinica Integrada <br />{new FileInfo(Assembly.GetExecutingAssembly().Location).LastWriteTime}";
-                c.SwaggerDoc("v1", new OpenApiInfo {
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
                     Version = "v1",
                     Title = "WebApi",
                     Description = desc
                 });
-                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme() {
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+                {
                     Name = "Authorization",
                     Type = SecuritySchemeType.ApiKey,
                     Scheme = "Bearer",
@@ -68,12 +75,14 @@ namespace WebApi
                     });
             });
 
-            services.AddAuthentication(options => {
+            services.AddAuthentication(options =>
+            {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 
             }).AddJwtBearer(options =>
-                options.TokenValidationParameters = new TokenValidationParameters {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
                     ValidateIssuer = true,
                     ValidateAudience = true,
                     ValidateLifetime = true,
@@ -86,7 +95,8 @@ namespace WebApi
 
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
 
             GridifyGlobalConfiguration.EnableEntityFrameworkCompatibilityLayer();
 
@@ -105,20 +115,21 @@ namespace WebApi
             app.UseCors("AllowAnyOrigin");
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseEndpoints(endpoints => {
+            app.UseEndpoints(endpoints =>
+            {
                 endpoints.MapControllers();
             });
         }
 
-        async void SeedDatabaseAsync(IApplicationBuilder app) {
-            using (var serviceScope = app.ApplicationServices.CreateScope()) {
-                var geracaoUsuariosPerfisIniciais = serviceScope.ServiceProvider.GetService<IDbContextSeed>();
+        static async void SeedDatabaseAsync(IApplicationBuilder app)
+        {
+            using var serviceScope = app.ApplicationServices.CreateScope();
+            var geracaoUsuariosPerfisIniciais = serviceScope.ServiceProvider.GetService<IDbContextSeed>();
 
-                geracaoUsuariosPerfisIniciais.GerarPerfis();
-                geracaoUsuariosPerfisIniciais.GerarUsuarios();
-                await geracaoUsuariosPerfisIniciais.GerarProfissionaisEEquipesAsync();
-                await geracaoUsuariosPerfisIniciais.GerarSalasAsync();
-            }
+            geracaoUsuariosPerfisIniciais.GerarPerfis();
+            //geracaoUsuariosPerfisIniciais.GerarUsuarios();
+            //await geracaoUsuariosPerfisIniciais.GerarProfissionaisEEquipesAsync();
+            //await geracaoUsuariosPerfisIniciais.GerarSalasAsync();
         }
     }
 }

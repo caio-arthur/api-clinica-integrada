@@ -1,5 +1,4 @@
-﻿using Application.DTOs;
-using Application.Interfaces;
+﻿using Application.Interfaces;
 using Application.Models;
 using AutoMapper;
 using Domain.Entities;
@@ -33,23 +32,22 @@ namespace Application.Handlers.Consultas.Commands.Update.IniciarConsulta
             try {
                 var consulta = await _context.Consultas
                     .Include(c => c.Agendamento) // Inclui o Agendamento relacionado
-                    .FirstOrDefaultAsync(c => c.Id == request.ConsultaId);
+                    .FirstOrDefaultAsync(c => c.Id == request.ConsultaId, cancellationToken);
 
                 if (consulta == null) {
                     throw new Exception(nameof(Consulta));
                 }
-                var agendamento = await _context.Agendamentos.FindAsync(consulta.AgendamentoId);
+
+                var agendamento = await _context.Agendamentos.FindAsync([consulta.AgendamentoId], cancellationToken);
                 agendamento.Status = AgendamentoStatus.Concluido;
                 consulta.Status = ConsultaStatus.EmAndamento;
                 consulta.DataHoraInicio = DateTime.Now; // O Horário é registrado
 
                 //Bloquear Sala
-                var salaConsulta = await _context.Salas.FirstOrDefaultAsync(x => x.Id == consulta.Agendamento.SalaId);
+                var salaConsulta = await _context.Salas.FirstOrDefaultAsync(x => x.Id == consulta.Agendamento.SalaId, cancellationToken);
                 if (salaConsulta != null) {
                     salaConsulta.IsDisponivel = false;
                 }
-
-                await _context.SaveChangesAsync(cancellationToken);
 
                 var result = salaConsulta != null ? "Sala Bloqueada" : "Ok";
 
