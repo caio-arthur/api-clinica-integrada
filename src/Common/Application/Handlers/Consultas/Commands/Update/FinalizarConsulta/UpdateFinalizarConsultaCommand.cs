@@ -32,7 +32,7 @@ namespace Application.Handlers.Consultas.Commands.Update.FinalizarConsulta
             {
                 var consulta = await _context.Consultas
                     .Include(c => c.Agendamento) // Inclui o Agendamento relacionado
-                    .FirstOrDefaultAsync(c => c.Id == request.ConsultaId);
+                    .FirstOrDefaultAsync(c => c.Id == request.ConsultaId, cancellationToken);
 
                 if (consulta == null)
                 {
@@ -44,17 +44,17 @@ namespace Application.Handlers.Consultas.Commands.Update.FinalizarConsulta
 
                 if (consulta.Agendamento != null)
                 {
-                    await AtualizarEtapaPaciente((Guid)consulta.Agendamento.PacienteId, cancellationToken);
+                    await AtualizarEtapaPacienteEmMemoria((Guid)consulta.Agendamento.PacienteId, cancellationToken);
 
                 }
 
-                //Liberar Sala
-                var salaConsulta = await _context.Salas.FirstOrDefaultAsync(x => x.Id == consulta.Agendamento.SalaId);
+                //Liberar Salaz
+                var salaConsulta = await _context.Salas.FirstOrDefaultAsync(x => x.Id == consulta.Agendamento.SalaId, cancellationToken);
                 if (salaConsulta != null)
                 {
                     salaConsulta.IsDisponivel = true;
                 }
-                await _context.SaveChangesAsync(cancellationToken);
+
                 var result = salaConsulta != null ? "Sala Liberada" : "Ok";
                 return ServiceResult.Success(result);
             }
@@ -64,15 +64,13 @@ namespace Application.Handlers.Consultas.Commands.Update.FinalizarConsulta
             }
         }
 
-        private async Task AtualizarEtapaPaciente(Guid pacienteId, CancellationToken cancellationToken)
+        private async Task AtualizarEtapaPacienteEmMemoria(Guid pacienteId, CancellationToken cancellationToken)
         {
             var paciente = await _context.Pacientes.FirstOrDefaultAsync(x => x.Id == pacienteId, cancellationToken);
-            if (paciente == null)
+            if (paciente != null)
             {
-                throw new Exception("Paciente não encontrado.");
+                paciente.Etapa = PacienteEtapa.ConsultaConcluida;
             }
-            paciente.Etapa = PacienteEtapa.ConsultaConcluida;
-            await _context.SaveChangesAsync(cancellationToken);
         }
     }
 

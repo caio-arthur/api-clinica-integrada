@@ -7,6 +7,6 @@ namespace Domain.Enums
         AguardandoConsulta = 3, // Finalizar Triagem
         EmAndamento = 4, //Iniciar Consulta
         Concluida = 5, //Finalizar Consulta
-        Cancelada = 6
+        Cancelada = 6,
     }
 }

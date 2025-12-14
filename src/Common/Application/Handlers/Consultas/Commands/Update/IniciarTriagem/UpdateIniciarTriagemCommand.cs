@@ -22,16 +22,16 @@ namespace Application.Handlers.Consultas.Commands.Update.IniciarTriagem
         }
         public async Task<ServiceResult> Handle(UpdateIniciarTriagemCommand request, CancellationToken cancellationToken) {
             try {
-                var consulta = await _context.Consultas.FindAsync(request.ConsultaId);
+                var consulta = await _context.Consultas.FindAsync(request.ConsultaId, cancellationToken);
                 if (consulta == null) {
                     throw new Exception(nameof(Consulta));
                 }
-                var agendamento = await _context.Agendamentos.FindAsync(consulta.AgendamentoId);
+                var agendamento = await _context.Agendamentos.FindAsync(consulta.AgendamentoId, cancellationToken);
                 agendamento.Status = AgendamentoStatus.Concluido;
                 consulta.Status = ConsultaStatus.Triagem;
 
                 //Bloquear Sala
-                var salaConsulta = await _context.Salas.FirstOrDefaultAsync(x => x.Id == consulta.Agendamento.SalaId);
+                var salaConsulta = await _context.Salas.FirstOrDefaultAsync(x => x.Id == consulta.Agendamento.SalaId, cancellationToken);
                 if (salaConsulta != null) {
                     salaConsulta.IsDisponivel = false;
                 }
