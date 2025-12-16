@@ -10,8 +10,11 @@ services:
       - "8080:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=db;Database=clinicaintegradadb;User ID=root;Password=Teste1@2
+      - "Jwt__Key=0-v3nt0-sussurr4-s3gr3dos-4nt1gos-3nqu4nto-4s-estrel4s-d4nç4m-no-c3u-noturno,1lum1n4ndo-os-cor4ções-dos-v14j4nt3s-sol1t4r1os"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
   db:
     image: mysql:latest
@@ -22,6 +25,11 @@ services:
       - "3306:3306"
     volumes:
       - dbdata:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 5s
+      timeout: 10s
+      retries: 5
 
 volumes:
   dbdata:
