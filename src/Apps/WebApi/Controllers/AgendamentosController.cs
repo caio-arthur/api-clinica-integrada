@@ -23,6 +23,7 @@ namespace WebApi.Controllers
             return Ok(await Mediator.Send(query));
         }
 
+        [Authorize(Roles = "atendente")]
         [HttpGet("{id}")]
         public async Task<ActionResult<AgendamentoDTO>> GetById(Guid id) {
             var result = await Mediator.Send(new GetAgendamentoByIdQuery { Id = id });
@@ -67,6 +68,7 @@ namespace WebApi.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles = "atendente")]
         [HttpGet("hoje")]
         public async Task<ActionResult> GetAgendamentosDoDia([FromQuery] Especialidade especialidade, [FromQuery] AgendamentoTipo tipo) {
             var result = await Mediator.Send(new GetAgendamentosHojeByEspecialidadeQuery { Especialidade = especialidade, Tipo = tipo });

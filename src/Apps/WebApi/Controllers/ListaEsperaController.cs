@@ -14,7 +14,7 @@ namespace WebApi.Controllers
     [ApiController]
     public class ListaEsperaController : ApiControllerBase
     {
-        //[Authorize(Roles = "atendente")]
+        [Authorize(Roles = "atendente")]
         [HttpGet]
         public async Task<ActionResult<PaginatedList<ListaEsperaEntryDTO>>> Get([FromQuery] GetListaEsperaEntriesQuery query) {
             return Ok(await Mediator.Send(query));

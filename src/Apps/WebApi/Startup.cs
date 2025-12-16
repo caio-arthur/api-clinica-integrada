@@ -1,8 +1,8 @@
 using Application;
+using Application.Interfaces;
 using FluentValidation;
 using Gridify;
 using Infrastructure;
-using Infrastructure.Identity.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -128,7 +128,7 @@ namespace WebApi
             var geracaoUsuariosPerfisIniciais = serviceScope.ServiceProvider.GetService<IDbContextSeed>();
 
             geracaoUsuariosPerfisIniciais.GerarPerfis();
-            //geracaoUsuariosPerfisIniciais.GerarUsuarios();
+            geracaoUsuariosPerfisIniciais.GerarAcessoInicial();
             //await geracaoUsuariosPerfisIniciais.GerarProfissionaisEEquipesAsync();
             //await geracaoUsuariosPerfisIniciais.GerarSalasAsync();
         }

@@ -34,8 +34,6 @@ namespace WebApi.Controllers
             return Ok(result);
         }
 
-        // GET: api/pacientes/{id}/localizar-etapa
-        // essa requisição deve retornar a etapa atual do paciente no sistema
         [Authorize(Roles = "atendente")]
         [HttpGet("{id}/localizar-etapa")]
         public async Task<ActionResult<PacienteEtapa>> GetEtapa(Guid id) {

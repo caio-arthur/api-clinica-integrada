@@ -1,5 +1,5 @@
-﻿using Domain.Entities;
-using Infrastructure.Identity.Services.Interfaces;
+﻿using Application.Interfaces;
+using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -59,7 +59,7 @@ namespace Infrastructure.Identity.Services
         //}
 
 
-        public async Task<bool> InserirUsuario(string nome, string sobreNome, string email, string telefone, IEnumerable<string> perfis, string senha) {
+        public async Task<bool> InserirUsuario(string nome, string email, string telefone, IEnumerable<string> perfis, string senha) {
             var usuario = new Usuario {
                 Name = nome,
                 UserName = email,

@@ -1,8 +1,8 @@
 using Application.Interfaces;
 using Domain.Entities;
 using Domain.Enums;
-using Infrastructure.Identity.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 
 
 namespace Infrastructure.Identity.Services
@@ -13,21 +13,29 @@ namespace Infrastructure.Identity.Services
         private readonly UserManager<Usuario> _userManager;
         private readonly RoleManager<Perfil> _roleManager;
         private readonly IApplicationDbContext _context;
+        private readonly IConfiguration _configuration;
 
         public DbContextSeed(RoleManager<Perfil> roleManager,
               UserManager<Usuario> userManager,
-              IApplicationDbContext context) {
+              IApplicationDbContext context,
+              IConfiguration configuration
+              )
+        {
             _roleManager = roleManager;
             _userManager = userManager;
             _context = context;
+            _configuration = configuration;
         }
 
         // para especialidade, gerar uma equipe com 2 estagiários e 1 professor
-        public async Task GerarProfissionaisEEquipesAsync() {
+        public async Task GerarProfissionaisEEquipesAsync()
+        {
             Especialidade[] especialidades = { Especialidade.Psicologia, Especialidade.Fisioterapia, Especialidade.Odontologia, Especialidade.Nutricao };
 
-            foreach (var especialidade in especialidades) {
-                if (!_context.Equipes.Any(e => e.Especialidade == especialidade)) {
+            foreach (var especialidade in especialidades)
+            {
+                if (!_context.Equipes.Any(e => e.Especialidade == especialidade))
+                {
                     var equipe = new Equipe { Especialidade = especialidade, Nome = "Equipe de " + especialidade.ToString() };
 
                     var estagiario1 = new Profissional { Especialidade = especialidade, Nome = "Estagiario 1", RA = "922222222", Email = "email1@example.com", Telefone = "31999999999", Tipo = TipoProfissional.Estagiario };
@@ -53,16 +61,21 @@ namespace Infrastructure.Identity.Services
         }
 
 
-        public async Task GerarSalasAsync() {
+        public async Task GerarSalasAsync()
+        {
             Especialidade[] especialidades = { Especialidade.Psicologia, Especialidade.Fisioterapia, Especialidade.Odontologia, Especialidade.Nutricao };
 
-            foreach (var especialidade in especialidades) {
+            foreach (var especialidade in especialidades)
+            {
                 // Verificar se há pelo menos duas salas para a especialidade
                 var salasExistentes = _context.Salas.Where(s => s.Especialidade == especialidade).Count();
-                if (salasExistentes < 2) {
+                if (salasExistentes < 2)
+                {
                     // Criar as salas que faltam
-                    if (!_context.Salas.Any(s => s.Nome == $"Sala de {especialidade} 1")) {
-                        var sala1 = new Sala {
+                    if (!_context.Salas.Any(s => s.Nome == $"Sala de {especialidade} 1"))
+                    {
+                        var sala1 = new Sala
+                        {
                             Especialidade = especialidade,
                             Nome = $"Sala de {especialidade} 1",
                             IsDisponivel = true
@@ -70,8 +83,10 @@ namespace Infrastructure.Identity.Services
                         _context.Salas.Add(sala1);
                     }
 
-                    if (!_context.Salas.Any(s => s.Nome == $"Sala de {especialidade} 2")) {
-                        var sala2 = new Sala {
+                    if (!_context.Salas.Any(s => s.Nome == $"Sala de {especialidade} 2"))
+                    {
+                        var sala2 = new Sala
+                        {
                             Especialidade = especialidade,
                             Nome = $"Sala de {especialidade} 2",
                             IsDisponivel = true
@@ -87,11 +102,14 @@ namespace Infrastructure.Identity.Services
 
 
 
-        public void GerarPerfis() {
+        public void GerarPerfis()
+        {
             string[] perfis = { "atendente", "cliente", "estagiario", "professor" };
 
-            foreach (var perfilNome in perfis) {
-                if (!_roleManager.RoleExistsAsync(perfilNome).Result) {
+            foreach (var perfilNome in perfis)
+            {
+                if (!_roleManager.RoleExistsAsync(perfilNome).Result)
+                {
                     Perfil perfil = new();
                     perfil.Name = perfilNome;
                     perfil.NormalizedName = perfil.Name.ToUpper();
@@ -100,12 +118,15 @@ namespace Infrastructure.Identity.Services
             }
         }
 
-        public void GerarUsuarios() {
+        public void GerarUsuarios()
+        {
             string[] perfis = { "atendente", "cliente", "estagiario", "professor" };
 
-            foreach (var perfilNome in perfis) {
+            foreach (var perfilNome in perfis)
+            {
                 string email = $"{perfilNome}@user.com.br";
-                if (_userManager.FindByNameAsync(email).Result == null) {
+                if (_userManager.FindByNameAsync(email).Result == null)
+                {
                     Usuario usuario = new();
                     usuario.Name = perfilNome.First().ToString().ToUpper() + perfilNome.Substring(1);
                     usuario.UserName = email;
@@ -118,12 +139,37 @@ namespace Infrastructure.Identity.Services
 
                     IdentityResult result = _userManager.CreateAsync(usuario, "Teste1@").Result;
 
-                    if (result.Succeeded) {
+                    if (result.Succeeded)
+                    {
                         _userManager.AddToRoleAsync(usuario, perfilNome).Wait();
                     }
                 }
             }
         }
 
+        public void GerarAcessoInicial()
+        {
+            var email = _configuration["AcessoInicial:Email"];
+
+
+            if (_userManager.FindByNameAsync(email).Result == null)
+            {
+                Usuario usuario = new();
+                usuario.Name = "Administrador";
+                usuario.UserName = email;
+                usuario.NormalizedUserName = usuario.UserName.ToUpper();
+                usuario.Email = usuario.UserName;
+                usuario.NormalizedEmail = usuario.Email.ToUpper();
+                usuario.LockoutEnabled = false;
+                usuario.SecurityStamp = Guid.NewGuid().ToString();
+
+                IdentityResult result = _userManager.CreateAsync(usuario, _configuration["AcessoInicial:Senha"]).Result;
+
+                if (result.Succeeded)
+                {
+                    _userManager.AddToRoleAsync(usuario, "atendente").Wait();
+                }
+            }
+        }
     }
 }
