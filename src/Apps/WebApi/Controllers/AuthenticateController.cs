@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using Domain.Entities;
+using FluentValidation;
 using FluentValidation.Results;
 using Infrastructure.Identity.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -28,36 +29,54 @@ namespace WebApi.Controllers
 
         [HttpPost("login")]
         [AllowAnonymous]
-        public async Task<ActionResult> Login([FromBody] AutenticacaoViewModel autenticacaoViewModel) {
+        public async Task<ActionResult> Login([FromBody] AutenticacaoViewModel autenticacaoViewModel)
+        {
             ValidationResult validationResult = await _validator.ValidateAsync(autenticacaoViewModel);
 
-            if (!validationResult.IsValid) {
+            if (!validationResult.IsValid)
+            {
                 return BadRequest(validationResult.Errors);
             }
 
             var result = await _autenticacaoService.AutenticarUsuario(autenticacaoViewModel.Email, autenticacaoViewModel.Senha);
 
-            if (result) {
-                var perfil = _autenticacaoService.GetPerfilUsuario(autenticacaoViewModel.Email);
-                return Ok(GeraToken(autenticacaoViewModel, perfil.Result.ElementAt(0)));
-            } else {
+            if (result)
+            {
+                // 1. Buscamos o usuário completo
+                var usuario = await _autenticacaoService.GetUsuario(autenticacaoViewModel.Email);
+
+                // 2. Buscamos o perfil (Role)
+                // Nota: Usei await aqui para evitar o .Result (bloqueante) que estava no seu código original
+                var perfis = await _autenticacaoService.GetPerfilUsuario(autenticacaoViewModel.Email);
+                var perfil = perfis.FirstOrDefault();
+
+                // 3. Passamos o objeto 'usuario' para o método GeraToken
+                return Ok(GeraToken(autenticacaoViewModel, perfil, usuario));
+            }
+            else
+            {
                 return BadRequest("Tentativa login inválida.");
             }
         }
 
-        private UsuarioToken GeraToken(AutenticacaoViewModel autenticacaoViewModel, string perfil) {
+        // Atualize a assinatura para receber o objeto Usuario
+        private UsuarioToken GeraToken(AutenticacaoViewModel autenticacaoViewModel, string perfil, Usuario usuario)
+        {
+
             //define declarações do usuário
-            var claims = new[]
+            var claims = new List<Claim>
             {
-                 new Claim(JwtRegisteredClaimNames.UniqueName, autenticacaoViewModel.Email),
-                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                 new Claim(ClaimsIdentity.DefaultNameClaimType, autenticacaoViewModel.Email),
-                 new Claim(ClaimsIdentity.DefaultRoleClaimType, perfil)
-             };
+                new Claim(JwtRegisteredClaimNames.UniqueName, autenticacaoViewModel.Email),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(ClaimsIdentity.DefaultNameClaimType, autenticacaoViewModel.Email),
+                new Claim(ClaimsIdentity.DefaultRoleClaimType, perfil ?? string.Empty),
+                new Claim("usuario_nome", usuario.Name ?? "")
+            };
 
             //gera uma chave com base em um algoritmo simetrico
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:key"]));
-            //gera a assinatura digital do token usando o algoritmo Hmac e a chave privada
+
+            //gera a assinatura digital do token
             var credenciais = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             //Tempo de expiracão do token.
@@ -73,7 +92,8 @@ namespace WebApi.Controllers
                 signingCredentials: credenciais);
 
             //retorna os dados com o token e informacoes
-            return new UsuarioToken() {
+            return new UsuarioToken()
+            {
                 Autenticado = true,
                 Token = new JwtSecurityTokenHandler().WriteToken(token),
                 DataExpiracao = dataExpiracao,

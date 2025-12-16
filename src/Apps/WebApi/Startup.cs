@@ -1,4 +1,4 @@
-﻿using Application;
+using Application;
 using FluentValidation;
 using Gridify;
 using Infrastructure;
@@ -32,6 +32,7 @@ namespace WebApi
             services.AddInfrastructure(Configuration);
             services.AddApplication();
             services.AddHostedService<ConsultaMonitoramentoWorker>();
+            services.AddHostedService<LimpezaDadosAntigosWorker>();
             services.AddScoped<IValidator<AutenticacaoViewModel>, AutenticacaoViewModelValidator>();
             services.AddHttpClient();
 

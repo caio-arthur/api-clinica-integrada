@@ -48,6 +48,7 @@ namespace Application.Handlers.Pacientes.Commands.Create
 
                 var result = new CreatePacienteDTO {
                     PacienteId = entity.Id,
+                    PacienteNome = entity.Nome,
                     ListaEsperaId = null
                 };
 

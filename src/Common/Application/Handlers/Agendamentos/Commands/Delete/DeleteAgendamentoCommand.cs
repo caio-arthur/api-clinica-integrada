@@ -1,12 +1,14 @@
-﻿using Application.Interfaces;
+using Application.Interfaces;
 using Application.Models;
 using Domain.Enums;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 
 namespace Application.Handlers.Agendamentos.Commands.Delete
 {
     public class DeleteAgendamentoCommand : IRequestWrapper<string>
     {
+        [JsonIgnore]
         public Guid Id { get; set; }
         public bool RetornarPacienteListaEspera { get; set; } = true;
     }
@@ -51,7 +53,11 @@ namespace Application.Handlers.Agendamentos.Commands.Delete
                 }
                 else
                 {
-                    entity.Paciente.Etapa = PacienteEtapa.ConsultaCancelada;
+                    if (entity.Paciente != null)
+                    {
+                        entity.Paciente.Etapa = PacienteEtapa.ConsultaCancelada;
+
+                    }
                 }
 
                 entity.ExcludedAt = _dateTime.Now;

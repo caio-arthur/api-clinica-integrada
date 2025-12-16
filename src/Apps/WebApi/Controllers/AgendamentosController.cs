@@ -48,8 +48,9 @@ namespace WebApi.Controllers
 
         [Authorize(Roles = "atendente")]
         [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete(Guid id) {
-            var result = await Mediator.Send(new DeleteAgendamentoCommand { Id = id });
+        public async Task<ActionResult> Delete(Guid id, [FromBody] DeleteAgendamentoCommand command) {
+            command.Id = id;
+            var result = await Mediator.Send(command);
             if (!result.Succeeded) {
                 return BadRequest(result);
             }

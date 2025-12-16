@@ -3,6 +3,7 @@ using Application.Handlers.Salas.Commands.Create;
 using Application.Handlers.Salas.Commands.Delete;
 using Application.Handlers.Salas.Commands.Update;
 using Application.Handlers.Salas.Commands.Update.BloquearDesbloquearSala;
+using Application.Handlers.Salas.Queries.GetConsultaSalaAtivas;
 using Application.Handlers.Salas.Queries.GetSalaById;
 using Application.Handlers.Salas.Queries.GetSalas;
 using Application.Models;
@@ -15,6 +16,16 @@ namespace WebApi.Controllers
     [ApiController]
     public class SalasController : ApiControllerBase
     {
+        [Authorize(Roles = "atendente")]
+        [HttpGet("ativas")]
+        public async Task<ActionResult<List<SalaDTO>>> GetSalasAtivas() {
+            var result = await Mediator.Send(new GetConsultaSalasAtivasQuery());
+            if (!result.Succeeded) {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
+
         [Authorize(Roles = "atendente")]
         [HttpGet]
         public async Task<ActionResult<PaginatedList<SalaDTO>>> Get([FromQuery] GetSalasQuery query) {

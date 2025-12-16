@@ -33,5 +33,10 @@ namespace Infrastructure.Identity.Services
             await _signInManager.SignOutAsync();
         }
 
+        public async Task<Usuario> GetUsuario(string nomeUsuario)
+        {
+            return await _userManager.FindByNameAsync(nomeUsuario);
+        }
+
     }
 }
