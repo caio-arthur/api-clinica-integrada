@@ -1,4 +1,4 @@
-﻿using Application;
+using Application;
 using FluentValidation;
 using Gridify;
 using Infrastructure;
