@@ -1,4 +1,4 @@
-﻿namespace WebApi.ViewModels
+namespace Application.Models
 {
     public class UsuarioToken
     {

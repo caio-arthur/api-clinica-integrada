@@ -1,5 +1,5 @@
-﻿using Domain.Entities;
-using Infrastructure.Identity.Services.Interfaces;
+﻿using Application.Interfaces;
+using Domain.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 

@@ -1,7 +1,7 @@
 ﻿using Application.DTOs;
 using Application.Handlers.Usuarios.Queries.GetUsuarios;
+using Application.Interfaces;
 using Application.Models;
-using Infrastructure.Identity.Services.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

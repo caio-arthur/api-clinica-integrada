@@ -1,7 +1,6 @@
 ﻿using Application.Interfaces;
 using Domain.Entities;
 using Infrastructure.Identity.Services;
-using Infrastructure.Identity.Services.Interfaces;
 using Infrastructure.Persistence;
 using Infrastructure.Services;
 using Microsoft.AspNetCore.Http;
