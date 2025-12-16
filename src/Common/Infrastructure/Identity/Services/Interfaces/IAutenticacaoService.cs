@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Domain.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,5 +12,6 @@ namespace Infrastructure.Identity.Services.Interfaces
         Task<bool> AutenticarUsuario(string userName, string senha);
         Task Logout();
         Task<IList<string>> GetPerfilUsuario(string nomeUsuario);
+        Task<Usuario> GetUsuario(string nomeUsuario);
     }
 }

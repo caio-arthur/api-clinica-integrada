@@ -27,6 +27,7 @@
 	  <Folder Include="Handlers\Equipes\Commands\Delete\" />
 	  <Folder Include="Handlers\Equipes\Commands\Update\" />
 	  <Folder Include="Handlers\Equipes\Queries\GetEquipeById\" />
+	  <Folder Include="Handlers\Relatorio\Commands\" />
 	  <Folder Include="Handlers\Salas\Commands\Delete\" />
 	  <Folder Include="Handlers\Salas\Queries\GetSalaById\" />
 	</ItemGroup>

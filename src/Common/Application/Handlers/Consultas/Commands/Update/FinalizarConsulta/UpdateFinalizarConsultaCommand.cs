@@ -42,17 +42,23 @@ namespace Application.Handlers.Consultas.Commands.Update.FinalizarConsulta
                 consulta.Status = ConsultaStatus.Concluida;
                 consulta.DataHoraFim = DateTime.Now; // O Horário é registrado
 
-                if (consulta.Agendamento != null)
+                if (consulta.Agendamento.Paciente != null)
                 {
                     await AtualizarEtapaPacienteEmMemoria((Guid)consulta.Agendamento.PacienteId, cancellationToken);
-
                 }
 
                 //Liberar Salaz
                 var salaConsulta = await _context.Salas.FirstOrDefaultAsync(x => x.Id == consulta.Agendamento.SalaId, cancellationToken);
                 if (salaConsulta != null)
                 {
-                    salaConsulta.IsDisponivel = true;
+                    // se não houver nenhuma outra consulta nessa sala neste momento
+                    if (!await _context.Consultas.AnyAsync(c =>
+                        c.Agendamento.SalaId == salaConsulta.Id &&
+                        c.Status == ConsultaStatus.EmAndamento &&
+                        c.Id != consulta.Id, cancellationToken))
+                    {
+                        salaConsulta.IsDisponivel = true;
+                    }
                 }
 
                 var result = salaConsulta != null ? "Sala Liberada" : "Ok";

@@ -9,6 +9,7 @@ namespace Application.DTOs
     public class CreatePacienteDTO
     {
         public Guid PacienteId { get; set; }
+        public string PacienteNome { get; set; }
         public Guid? ListaEsperaId { get; set; }
     }
 }

@@ -33,6 +33,7 @@ namespace Application.Handlers.Consultas.Commands.AtualizarObservacoes
         {
             var consulta = await _context.Consultas
                 .Include(c => c.Agendamento)
+                    .ThenInclude(a => a.Paciente)
                 .FirstOrDefaultAsync(c => c.Id == request.ConsultaId, cancellationToken);
 
             if (consulta == null)

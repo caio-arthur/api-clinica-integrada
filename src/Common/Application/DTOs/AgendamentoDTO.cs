@@ -1,7 +1,5 @@
 using Application.Mappings;
 using Domain.Entities;
-using Domain.Enums;
-using System;
 
 namespace Application.DTOs
 {
@@ -21,6 +19,7 @@ namespace Application.DTOs
         public string Sala { get; set; }
         public Guid? SalaId { get; set; }
         public Guid? ConsultaId { get; set; }
+        public AgendamentoEquipeDTO Equipe { get; set; }
 
         public void Mapping(MappingProfile profile) {
             profile.CreateMap<Agendamento, AgendamentoDTO>()
@@ -37,7 +36,22 @@ namespace Application.DTOs
                 .ForMember(d => d.NomeEquipe, opt => opt.MapFrom(s => s.NomeEquipe))
                 .ForMember(d => d.Sala, opt => opt.MapFrom(s => s.Sala != null ? s.Sala.Nome : string.Empty))
                 .ForMember(d => d.SalaId, opt => opt.MapFrom(s => s.SalaId))
-                .ForMember(d => d.ConsultaId, opt => opt.MapFrom(s => s.ConsultaId));
+                .ForMember(d => d.ConsultaId, opt => opt.MapFrom(s => s.ConsultaId))
+                .ForMember(d => d.Equipe, opt => opt.MapFrom(s => s.Consulta.Equipe))
+                ;
+
+        }
+
+
+    }
+
+    public class AgendamentoEquipeDTO : IMapFrom<Equipe>
+    {
+        public Guid Id { get; set; }
+        public string Nome { get; set; }
+        public static void Mapping(MappingProfile profile) {
+            profile.CreateMap<Equipe, AgendamentoEquipeDTO>()
+                ;
         }
     }
 }

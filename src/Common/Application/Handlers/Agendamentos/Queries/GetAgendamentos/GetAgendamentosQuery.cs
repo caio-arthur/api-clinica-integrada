@@ -37,6 +37,7 @@ namespace Application.Handlers.Agendamentos.Queries.GetAgendamentos
                 .Include(p => p.Paciente)
                 .Include(p => p.Sala)
                 .Include(p => p.Consulta)
+                    .ThenInclude(c => c.Equipe)
                 .Where(p => !p.IsDeleted)
                 .GridifyQueryable(request, mapper);
 
