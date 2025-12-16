@@ -3,7 +3,7 @@ version: '3.8'
 services:
   webapi:
     environment:
-      - "ConnectionStrings__DefaultConnection=Server=db;Database=clinicaintegradadb;User=root;Password=Teste1@2"
+      - "ConnectionStrings__DefaultConnection=Server=db;Database=clinicaintegradadb;User ID=root;Password=Teste1@2"
       - ASPNETCORE_ENVIRONMENT=Development
 
     ports:
