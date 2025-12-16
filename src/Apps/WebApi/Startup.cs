@@ -32,6 +32,7 @@ namespace WebApi
             services.AddInfrastructure(Configuration);
             services.AddApplication();
             services.AddHostedService<ConsultaMonitoramentoWorker>();
+            services.AddHostedService<LimpezaDadosAntigosWorker>();
             services.AddScoped<IValidator<AutenticacaoViewModel>, AutenticacaoViewModelValidator>();
             services.AddHttpClient();
 
